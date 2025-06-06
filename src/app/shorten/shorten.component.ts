@@ -40,7 +40,7 @@ export class ShortenComponent {
       .subscribe({
         next: (response) => {
           this.shortUrl = response.shortCode
-            ? `https://68418b25d48516d1d35bf578.mockapi.io/links/${response.shortCode}`
+            ? `https://dailoc77.github.io/LinkShort_FE/#/${response.shortCode}`
             : '';
         },
         error: () => {
