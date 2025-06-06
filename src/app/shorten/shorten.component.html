@@ -1,0 +1,12 @@
+<div class="shortener-container">
+  <h1>ShortURL is a free tool to shorten</h1>
+  <p>URL shortener allows to create a shortened link making it easy to share</p>
+  <div class="input-wrapper">
+    <input [(ngModel)]="originalUrl" placeholder="https://example.com" />
+    <button (click)="shortenUrl()">Shorten</button>
+  </div>
+  <div *ngIf="shortUrl" class="result">
+    ✅ Link rút gọn:
+    <a href="#" (click)="redirectToOriginal($event, shortUrl)">{{ shortUrl }}</a>
+  </div>
+</div>
