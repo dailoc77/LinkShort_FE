@@ -4,6 +4,6 @@ import { RedirectComponent } from './redirectcomponent/redirectcomponent.compone
 
 export const routes: Routes = [
     {path: '', component: ShortenComponent},
-    { path: 'links/:shortCode', component: RedirectComponent},
+    { path: ':shortCode', component: RedirectComponent},
     {path: '**', redirectTo: '', pathMatch: 'full'},
 ];
