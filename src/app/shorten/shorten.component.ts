@@ -17,7 +17,7 @@ export class ShortenComponent {
   constructor(private http: HttpClient) { }
 
   shortenUrl() {
-    const apiUrl = 'https://68418b25d48516d1d35bf578.mockapi.io/links';
+    const apiUrl = 'http://localhost:8080/links';
 
     // Tạo shortCode ngẫu nhiên 6 ký tự (chữ + số)
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -52,9 +52,9 @@ export class ShortenComponent {
 
   redirectToOriginal(event: Event, shortUrl: string) {
     event.preventDefault();
-    // Lấy shortCode từ shortUrl
+      // Lấy shortCode từ shortUrl
     const shortCode = shortUrl.split('/').pop();
-    // Gọi đúng endpoint BE của bạn (ví dụ: http://localhost:8080/links/{shortCode})
+    
     const apiUrl = `http://localhost:8080/links/${shortCode}`;
     this.http.get<any>(apiUrl).subscribe({
       next: (response) => {
