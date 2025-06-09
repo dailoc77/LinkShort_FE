@@ -23,14 +23,22 @@ export class RedirectComponent implements OnInit {
       fetch(apiUrl)
         .then(async (res) => {
           if (!res.ok) throw new Error('Network response was not ok');
-          const data = await res.json();
-          // Nếu BE trả về object
-          if (data.originalUrl) {
-            window.location.href = data.originalUrl;
+          const text = await res.text();
+          let url = '';
+          try {
+            // Thử parse JSON
+            const data = JSON.parse(text);
+            if (data.originalUrl) {
+              url = data.originalUrl;
+            } else if (Array.isArray(data) && data.length > 0 && data[0].originalUrl) {
+              url = data[0].originalUrl;
+            }
+          } catch {
+            // Nếu không phải JSON, assume là string thuần
+            url = text;
           }
-          // Nếu BE trả về array (giữ lại logic cũ)
-          else if (Array.isArray(data) && data.length > 0 && data[0].originalUrl) {
-            window.location.href = data[0].originalUrl;
+          if (url && url.startsWith('http')) {
+            window.location.href = url;
           } else {
             alert('Không tìm thấy link gốc!');
           }
