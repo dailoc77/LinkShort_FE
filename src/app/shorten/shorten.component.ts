@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Enviroment } from '../enviroment'; // Import your environment file
 
 @Component({
   selector: 'app-shorten',
@@ -17,7 +18,7 @@ export class ShortenComponent {
   constructor(private http: HttpClient) { }
 
   shortenUrl() {
-    const apiUrl = 'http://localhost:8080/links';
+    const apiUrl = `${Enviroment.apiBaseUrl}`;
 
     // Tạo shortCode ngẫu nhiên 6 ký tự (chữ + số)
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
