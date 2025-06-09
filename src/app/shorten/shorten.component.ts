@@ -53,22 +53,37 @@ export class ShortenComponent {
 
   redirectToOriginal(event: Event, shortUrl: string) {
     event.preventDefault();
-      // Lấy shortCode từ shortUrl
-    const shortCode = shortUrl.split('/').pop();
-    
-    const apiUrl = `http://localhost:8080/links/${shortCode}`;
-    this.http.get<any>(apiUrl).subscribe({
-      next: (response) => {
-        if (response.originalUrl) {
-          window.location.href = response.originalUrl;
+    // Lấy shortCode từ shortUrl
+    const parts = shortUrl.split('/');
+    const shortCode = parts[parts.length - 1] || parts[parts.length - 2];
+
+    const apiUrl = `${Enviroment.apiBaseUrl}/${shortCode}`;
+    console.log('Redirecting to:', apiUrl);
+
+    fetch(apiUrl)
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        const text = await res.text();
+        let url = '';
+        try {
+          // Thử parse JSON
+          const data = JSON.parse(text);
+          url = data.originalUrl || data.url || '';
+        } catch {
+          // Nếu không phải JSON, assume là string thuần
+          url = text;
+        }
+        console.log('Redirect to:', url);
+        if (url && url.startsWith('http')) {
+          window.location.href = url;
         } else {
           alert('Không tìm thấy link gốc!');
         }
-      },
-      error: () => {
+      })
+      .catch((err) => {
         alert('Không tìm thấy link gốc!');
-      }
-    });
+        console.error('Fetch error:', err);
+      });
   }
 
 }

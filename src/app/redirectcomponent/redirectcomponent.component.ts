@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID } from '@angular/core';
+import { Enviroment } from '../enviroment';
 
 @Component({
   selector: 'app-redirectcomponent',
@@ -14,26 +13,30 @@ import { Inject, PLATFORM_ID } from '@angular/core';
 export class RedirectComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit() {
     const shortCode = this.route.snapshot.paramMap.get('shortCode');
     if (shortCode) {
-      // Gọi MockAPI để lấy originalUrl
-      this.http.get<any[]>(`https://68418b25d48516d1d35bf578.mockapi.io/links?shortCode=${shortCode}`)
-        .subscribe({
-          next: (data) => {
-            if (data.length > 0 && data[0].originalUrl) {
-              window.location.href = data[0].originalUrl;
-            } else {
-              alert('Không tìm thấy link gốc!');
-            }
-          },
-          error: () => {
+      const apiUrl = `${Enviroment.apiBaseUrl}/${shortCode}`;
+      fetch(apiUrl)
+        .then(async (res) => {
+          if (!res.ok) throw new Error('Network response was not ok');
+          const data = await res.json();
+          // Nếu BE trả về object
+          if (data.originalUrl) {
+            window.location.href = data.originalUrl;
+          }
+          // Nếu BE trả về array (giữ lại logic cũ)
+          else if (Array.isArray(data) && data.length > 0 && data[0].originalUrl) {
+            window.location.href = data[0].originalUrl;
+          } else {
             alert('Không tìm thấy link gốc!');
           }
+        })
+        .catch(() => {
+          alert('Không tìm thấy link gốc!');
         });
     }
   }
