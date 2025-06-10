@@ -60,20 +60,17 @@ export class ShortenComponent {
     const apiUrl = `${Enviroment.apiBaseUrl}/${shortCode}`;
     console.log('Redirecting to:', apiUrl);
 
-    fetch(apiUrl)
+    // Add timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    fetch(apiUrl, { signal: controller.signal })
       .then(async (res) => {
-        if (!res.ok) throw new Error('Network response was not ok');
-        const text = await res.text();
-        let url = '';
-        try {
-          // Thử parse JSON
-          const data = JSON.parse(text);
-          url = data.originalUrl || data.url || '';
-        } catch {
-          // Nếu không phải JSON, assume là string thuần
-          url = text;
-        }
-        console.log('Redirect to:', url);
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        const data = await res.json();
+        const url = data.originalUrl || data.url;
+
         if (url && url.startsWith('http')) {
           window.location.href = url;
         } else {
@@ -81,9 +78,9 @@ export class ShortenComponent {
         }
       })
       .catch((err) => {
-        alert('Không tìm thấy link gốc!');
+        clearTimeout(timeoutId);
         console.error('Fetch error:', err);
+        alert('Không tìm thấy link gốc!');
       });
   }
-
 }
