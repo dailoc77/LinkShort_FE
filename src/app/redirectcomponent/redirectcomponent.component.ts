@@ -28,14 +28,10 @@ export class RedirectComponent implements OnInit {
           try {
             // Thử parse JSON
             const data = JSON.parse(text);
-            if (data.originalUrl) {
-              url = data.originalUrl;
-            } else if (Array.isArray(data) && data.length > 0 && data[0].originalUrl) {
-              url = data[0].originalUrl;
-            }
+            url = data.originalUrl || data.url || '';
           } catch {
             // Nếu không phải JSON, assume là string thuần
-            url = text;
+            url = text.replace(/^"|"$/g, ''); // Bỏ dấu ngoặc kép nếu có
           }
           if (url && url.startsWith('http')) {
             window.location.href = url;
@@ -43,8 +39,9 @@ export class RedirectComponent implements OnInit {
             alert('Không tìm thấy link gốc!');
           }
         })
-        .catch(() => {
+        .catch((err) => {
           alert('Không tìm thấy link gốc!');
+          console.error('Fetch error:', err);
         });
     }
   }

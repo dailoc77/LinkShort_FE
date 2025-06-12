@@ -64,13 +64,19 @@ export class ShortenComponent {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    fetch(apiUrl, { signal: controller.signal })
+    fetch(apiUrl)
       .then(async (res) => {
-        clearTimeout(timeoutId);
-        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-        const data = await res.json();
-        const url = data.originalUrl || data.url;
-
+        if (!res.ok) throw new Error('Network response was not ok');
+        const text = await res.text();
+        let url = '';
+        try {
+          // Thử parse JSON
+          const data = JSON.parse(text);
+          url = data.originalUrl || data.url || '';
+        } catch {
+          // Nếu không phải JSON, assume là string thuần
+          url = text.replace(/^"|"$/g, ''); // Bỏ dấu ngoặc kép nếu có
+        }
         if (url && url.startsWith('http')) {
           window.location.href = url;
         } else {
@@ -78,9 +84,8 @@ export class ShortenComponent {
         }
       })
       .catch((err) => {
-        clearTimeout(timeoutId);
-        console.error('Fetch error:', err);
         alert('Không tìm thấy link gốc!');
+        console.error('Fetch error:', err);
       });
   }
 }
