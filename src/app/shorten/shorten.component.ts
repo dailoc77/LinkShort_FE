@@ -77,7 +77,7 @@ export class ShortenComponent {
           // Nếu không phải JSON, assume là string thuần
           url = text.replace(/^"|"$/g, ''); // Bỏ dấu ngoặc kép nếu có
         }
-        if (url && url.startsWith('http')) {
+        if (url && url.startsWith('https')) {
           window.location.href = url;
         } else {
           alert('Không tìm thấy link gốc!');

@@ -20,6 +20,7 @@ export class RedirectComponent implements OnInit {
     const shortCode = this.route.snapshot.paramMap.get('shortCode');
     if (shortCode) {
       const apiUrl = `${Enviroment.apiBaseUrl}/${shortCode}`;
+      // ...existing code...
       fetch(apiUrl)
         .then(async (res) => {
           if (!res.ok) throw new Error('Network response was not ok');
@@ -33,7 +34,7 @@ export class RedirectComponent implements OnInit {
             // Nếu không phải JSON, assume là string thuần
             url = text.replace(/^"|"$/g, ''); // Bỏ dấu ngoặc kép nếu có
           }
-          if (url && url.startsWith('http')) {
+          if (url && url.startsWith('https')) {
             window.location.href = url;
           } else {
             alert('Không tìm thấy link gốc!');
@@ -43,6 +44,7 @@ export class RedirectComponent implements OnInit {
           alert('Không tìm thấy link gốc!');
           console.error('Fetch error:', err);
         });
+      // ...existing code...
     }
   }
 }
